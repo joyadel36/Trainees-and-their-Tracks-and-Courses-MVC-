@@ -1,0 +1,75 @@
+﻿@model task1.Models.Course
+
+@{
+    SelectList T_rainees = new SelectList(ViewBag.Trainees, "ID", "Name");
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Course</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Topic" class="control-label"></label>
+                <input asp-for="Topic" class="form-control" />
+                <span asp-validation-for="Topic" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Grade" class="control-label"></label>
+                <input asp-for="Grade" class="form-control" />
+                <span asp-validation-for="Grade" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="T_ID" class="control-label"></label>
+                <select id="T_ID" name="T_ID" onchange="updateListTwo()">
+                    @foreach (var item in ViewBag.Trainees)
+                    {
+                        <option value="@item.ID">@item.Name</option>
+                    }
+                </select>
+               @*  <select asp-for="T_ID" class="form-control" asp-items="@T_rainees" onchange="updateListTwo()"></select> *@
+            </div>
+            <br />
+            <div class="form-group">
+                 <input type="submit" value="Create" class="btn btn-primary" /> 
+                
+            </div>
+            <select id="list2">
+                <!-- Values will be dynamically populated based on the selection in list1 -->
+            </select>
+           @*  <input id="listTwo" type="text" /> *@
+        </form>
+    </div>
+</div>
+<br />
+<div>
+    <a asp-action="Index" class="btn btn-outline-dark" >Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<script>
+    function updateListTwo() {
+        var selectedValue = $("#T_ID").val(); // Get the selected value from the dropdown list
+        $.ajax({
+            url: '/Course/GetListTwoOptions',
+            type: 'GET',
+            data: { selectedValue: selectedValue },
+            success: function (data) {
+                console.log("This is a debug message.");
+                $("#listTwo").empty();
+                $.each(data, function (index, item) {
+                    $("#listTwo").append($('<option>').text(item.Topic).attr('value', item.ID));
+                } );
+            }
+     
+
+        });
+    }
+</script>
